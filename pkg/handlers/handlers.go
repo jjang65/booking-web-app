@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/jjang65/go-hello-word/pkg/config"
-	"github.com/jjang65/go-hello-word/pkg/models"
-	"github.com/jjang65/go-hello-word/pkg/render"
+	"github.com/jjang65/booking-web-app/pkg/config"
+	"github.com/jjang65/booking-web-app/pkg/models"
+	"github.com/jjang65/booking-web-app/pkg/render"
 	"net/http"
 )
 

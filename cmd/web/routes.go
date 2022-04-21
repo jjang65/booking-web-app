@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jjang65/go-hello-word/pkg/config"
-	"github.com/jjang65/go-hello-word/pkg/handlers"
+	"github.com/jjang65/booking-web-app/pkg/config"
+	"github.com/jjang65/booking-web-app/pkg/handlers"
 	"net/http"
 )
 

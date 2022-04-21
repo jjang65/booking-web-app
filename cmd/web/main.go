@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"github.com/jjang65/go-hello-word/pkg/config"
-	"github.com/jjang65/go-hello-word/pkg/handlers"
-	"github.com/jjang65/go-hello-word/pkg/render"
+	"github.com/jjang65/booking-web-app/pkg/config"
+	"github.com/jjang65/booking-web-app/pkg/handlers"
+	"github.com/jjang65/booking-web-app/pkg/render"
 	"log"
 	"net/http"
 	"time"

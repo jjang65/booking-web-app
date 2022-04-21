@@ -3,8 +3,8 @@ package render
 import (
 	"bytes"
 	"fmt"
-	"github.com/jjang65/go-hello-word/pkg/config"
-	"github.com/jjang65/go-hello-word/pkg/models"
+	"github.com/jjang65/booking-web-app/pkg/config"
+	"github.com/jjang65/booking-web-app/pkg/models"
 	"html/template"
 	"log"
 	"net/http"
