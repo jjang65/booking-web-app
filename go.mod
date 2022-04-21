@@ -1,4 +1,4 @@
-module github.com/jjang65/go-hello-word
+module github.com/jjang65/booking-web-app
 
 go 1.18
 
