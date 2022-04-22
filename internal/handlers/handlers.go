@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jjang65/booking-web-app/pkg/config"
-	"github.com/jjang65/booking-web-app/pkg/models"
-	"github.com/jjang65/booking-web-app/pkg/render"
+	"github.com/jjang65/booking-web-app/internal/config"
+	"github.com/jjang65/booking-web-app/internal/models"
+	"github.com/jjang65/booking-web-app/internal/render"
 	"log"
 	"net/http"
 )

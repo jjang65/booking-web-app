@@ -3,8 +3,8 @@ package render
 import (
 	"bytes"
 	"fmt"
-	"github.com/jjang65/booking-web-app/pkg/config"
-	"github.com/jjang65/booking-web-app/pkg/models"
+	"github.com/jjang65/booking-web-app/internal/config"
+	"github.com/jjang65/booking-web-app/internal/models"
 	"github.com/justinas/nosurf"
 	"html/template"
 	"log"
