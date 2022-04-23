@@ -1,5 +1,4 @@
 mode: set
-github.com/jjang65/booking-web-app/cmd/web/routes.go:11.49,43.2 19 1
 github.com/jjang65/booking-web-app/cmd/web/main.go:23.13,25.16 2 0
 github.com/jjang65/booking-web-app/cmd/web/main.go:29.2,37.16 4 0
 github.com/jjang65/booking-web-app/cmd/web/main.go:25.16,27.3 1 0
@@ -10,3 +9,4 @@ github.com/jjang65/booking-web-app/cmd/web/middleware.go:9.53,10.71 1 1
 github.com/jjang65/booking-web-app/cmd/web/middleware.go:10.71,13.3 2 0
 github.com/jjang65/booking-web-app/cmd/web/middleware.go:17.45,27.2 3 1
 github.com/jjang65/booking-web-app/cmd/web/middleware.go:30.50,32.2 1 1
+github.com/jjang65/booking-web-app/cmd/web/routes.go:11.49,43.2 19 1
