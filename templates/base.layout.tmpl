@@ -153,6 +153,21 @@
             })
         }
 
+        <!-- This plays error message if there is any -->
+        {{with .Error}}
+            notify("{{.}}", "error")
+        {{end}}
+
+        <!-- This plays flash message if there is any -->
+        {{with .Flash}}
+            notify("{{.}}", "success")
+        {{end}}
+
+        <!-- This plays waring message if there is any -->
+        {{with .Warning}}
+        notify("{{.}}", "warning")
+        {{end}}
+
         function Prompt() {
             let toast = function (c) {
                 const{
