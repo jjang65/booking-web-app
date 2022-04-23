@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/jjang65/booking-web-app/internal/config"
 	"github.com/jjang65/booking-web-app/internal/handlers"
+	"github.com/jjang65/booking-web-app/internal/models"
 	"github.com/jjang65/booking-web-app/internal/render"
 	"log"
 	"net/http"
@@ -19,6 +21,27 @@ var session *scs.SessionManager
 
 // main is the main application function
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
+	//http.ListenAndServe(portNumber, nil)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+	err = srv.ListenAndServe()
+	log.Fatal(err)
+}
+
+func run() error {
+	// Store Reservation type in the session
+	// gob is standard library
+	gob.Register(models.Reservation{})
+
 	// Change this to ture when in production
 	app.InProduction = false
 
@@ -35,6 +58,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 		log.Fatal("cannot create template cache")
+		return err
 	}
 
 	// Assign templateCache to app.TemplateCache in app config
@@ -55,14 +79,5 @@ func main() {
 
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
-
-	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
-	//http.ListenAndServe(portNumber, nil)
-
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-	err = srv.ListenAndServe()
-	log.Fatal(err)
+	return nil
 }
