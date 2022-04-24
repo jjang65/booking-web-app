@@ -6,18 +6,21 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/jjang65/booking-web-app/internal/config"
 	"github.com/jjang65/booking-web-app/internal/handlers"
+	"github.com/jjang65/booking-web-app/internal/helpers"
 	"github.com/jjang65/booking-web-app/internal/models"
 	"github.com/jjang65/booking-web-app/internal/render"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 const portNumber = ":8081"
 
 var app config.AppConfig
-
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 // main is the main application function
 func main() {
@@ -45,6 +48,12 @@ func run() error {
 	// Change this to ture when in production
 	app.InProduction = false
 
+	// Setup loggers
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true // Session will persist even after closing a tab
@@ -71,6 +80,9 @@ func run() error {
 
 	// Passing app reference to use app config in the render package
 	render.NewTemplates(&app)
+
+	// Passing app reference to helpers
+	helpers.NewHelpers(&app)
 
 	// create a new repo passing app config to be used in the handlers package
 	repo := handlers.NewRepo(&app)
