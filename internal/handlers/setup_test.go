@@ -67,7 +67,7 @@ func getRoutes() http.Handler {
 	mux.Use(middleware.Recoverer)
 
 	// NoSurf middleware for CSRF protection
-	mux.Use(NoSurf)
+	//mux.Use(NoSurf) // don't need for test; we're not testing NoSurf package
 
 	mux.Use(SessionLoad)
 
