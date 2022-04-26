@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/jjang65/booking-web-app/internal/config"
+	"github.com/jjang65/booking-web-app/internal/driver"
 	"github.com/jjang65/booking-web-app/internal/handlers"
 	"github.com/jjang65/booking-web-app/internal/helpers"
 	"github.com/jjang65/booking-web-app/internal/models"
@@ -24,10 +25,11 @@ var errorLog *log.Logger
 
 // main is the main application function
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
 	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 	//http.ListenAndServe(portNumber, nil)
@@ -40,7 +42,7 @@ func main() {
 	log.Fatal(err)
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 	// Store Reservation type in the session
 	// gob is standard library
 	gob.Register(models.Reservation{})
@@ -62,12 +64,20 @@ func run() error {
 
 	app.Session = session
 
+	// Connect to db
+	log.Println("connecting to db")
+	db, err := driver.ConnectSQL("host=172.18.0.3 port=5432 dbname=bookings user=root password=root")
+	if err != nil {
+		log.Fatal("cannot connect to db")
+	}
+	log.Println("connected to db")
+
 	// Create templateCache initially to cache templates
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Println(err)
 		log.Fatal("cannot create template cache")
-		return err
+		return nil, err
 	}
 
 	// Assign templateCache to app.TemplateCache in app config
@@ -85,11 +95,11 @@ func run() error {
 	helpers.NewHelpers(&app)
 
 	// create a new repo passing app config to be used in the handlers package
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	// Pass pointer to repository to use in the handlers package
 	handlers.NewHandlers(repo)
 
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
-	return nil
+	return db, nil
 }

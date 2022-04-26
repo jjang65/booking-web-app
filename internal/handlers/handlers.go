@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jjang65/booking-web-app/internal/config"
+	"github.com/jjang65/booking-web-app/internal/driver"
 	"github.com/jjang65/booking-web-app/internal/forms"
 	"github.com/jjang65/booking-web-app/internal/helpers"
 	"github.com/jjang65/booking-web-app/internal/models"
 	"github.com/jjang65/booking-web-app/internal/render"
+	"github.com/jjang65/booking-web-app/internal/repository"
+	"github.com/jjang65/booking-web-app/internal/repository/dbrepo"
 	"log"
 	"net/http"
 )
@@ -18,12 +21,14 @@ var Repo *Repository
 // Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // NewRepo creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 
@@ -34,6 +39,7 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler that can access to everything inside repository
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	m.DB.AllUsers()
 	//remoteIP := r.RemoteAddr
 	//m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
