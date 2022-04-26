@@ -61,7 +61,7 @@ func getRoutes() http.Handler {
 	app.UseCache = true
 
 	// Passing app reference to use app config in the render package
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
 	// create a new repo passing app config to be used in the handlers package
 	repo := NewRepo(&app)
