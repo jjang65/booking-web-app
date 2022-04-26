@@ -46,6 +46,9 @@ func run() (*driver.DB, error) {
 	// Store Reservation type in the session
 	// gob is standard library
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 
 	// Change this to ture when in production
 	app.InProduction = false
@@ -89,7 +92,7 @@ func run() (*driver.DB, error) {
 	app.UseCache = false
 
 	// Passing app reference to use app config in the render package
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
 	// Passing app reference to helpers
 	helpers.NewHelpers(&app)
