@@ -64,7 +64,7 @@ func getRoutes() http.Handler {
 	render.NewRenderer(&app)
 
 	// create a new repo passing app config to be used in the handlers package
-	repo := NewRepo(&app)
+	repo := NewTestRepo(&app)
 	// Pass pointer to repository to use in the handlers package
 	NewHandlers(repo)
 
