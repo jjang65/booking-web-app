@@ -73,13 +73,13 @@ func (m *postgresDbRepo) SearchAvailabilityByDatesByRoomID(start, end time.Time,
 	defer cancel()
 	query := `SELECT COUNT(id)
 				FROM room_restrictions
-				WHERE room_id $1
-				    AND $2 < end_date and $3 > start_date;`
+				WHERE room_id = $1
+				    AND $2 <= end_date and $3 >= start_date;`
 	var numRows int
 	row := m.DB.QueryRowContext(ctx, query, roomID, start, end)
 	err := row.Scan(&numRows)
 	if err != nil {
-		log.Println("SearchAvailabilityByDates::err:", err)
+		log.Println("SearchAvailabilityByDatesByRoomID::err:", err)
 		return false, err
 	}
 	if numRows == 0 {
