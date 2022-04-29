@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 )
 
@@ -23,7 +24,7 @@ var session *scs.SessionManager
 var pathToTemplates = "./../../templates"
 var functions = template.FuncMap{}
 
-func getRoutes() http.Handler {
+func TestMain(m *testing.M) {
 	// Store Reservation type in the session
 	// gob is standard library
 	gob.Register(models.Reservation{})
@@ -62,6 +63,11 @@ func getRoutes() http.Handler {
 
 	// Passing app reference to use app config in the render package
 	render.NewRenderer(&app)
+
+	os.Exit(m.Run())
+}
+
+func getRoutes() http.Handler {
 
 	// create a new repo passing app config to be used in the handlers package
 	repo := NewTestRepo(&app)
