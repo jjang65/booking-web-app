@@ -491,7 +491,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 
 	id, _, err := m.DB.Authenticate(email, password)
 	if err != nil {
-		log.Println(err)
+		log.Println("PostShowLogin:err: ", err)
 		m.App.Session.Put(r.Context(), "error", "Invalid login credentials")
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
