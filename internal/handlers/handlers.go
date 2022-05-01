@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/jjang65/booking-web-app/internal/config"
 	"github.com/jjang65/booking-web-app/internal/driver"
 	"github.com/jjang65/booking-web-app/internal/forms"
@@ -10,6 +11,7 @@ import (
 	"github.com/jjang65/booking-web-app/internal/render"
 	"github.com/jjang65/booking-web-app/internal/repository"
 	"github.com/jjang65/booking-web-app/internal/repository/dbrepo"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -79,6 +81,7 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 
 	// Put Room info to Session
 	res.Room.RoomName = room.RoomName
+	log.Println("Reservation::res: ", res)
 	m.App.Session.Put(r.Context(), "reservation", res)
 
 	sd := res.StartDate.Format("2006-01-02")
@@ -132,8 +135,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	reservation := models.Reservation{
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
-		Email:     r.Form.Get("phone"),
-		Phone:     r.Form.Get("email"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
 		StartDate: startDate,
 		EndDate:   endDate,
 		RoomID:    roomID,
@@ -156,7 +159,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newResrvationID, err := m.DB.InsertReservation(reservation)
+	newReservationID, err := m.DB.InsertReservation(reservation)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't insert reservation into db")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -167,8 +170,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		StartDate:     startDate,
 		EndDate:       endDate,
 		RoomID:        roomID,
-		ReservationID: newResrvationID,
-		RestrictionID: 1,
+		ReservationID: newReservationID,
+		RestrictionID: 2,
 	}
 
 	err = m.DB.InsertRoomRestriction(restriction)
@@ -178,6 +181,43 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send an email to client
+	htmlMessage := fmt.Sprintf(`
+		<strong>Reservation Confirmation</strong>
+		Dear %s:, <br>
+		This is to confirm your reservation from %s to %s.
+	`,
+		reservation.FirstName,
+		reservation.StartDate.Format("2006-01-02"),
+		reservation.EndDate.Format("2006-01-02"),
+	)
+	log.Println("reservation.Email: ", reservation.Email)
+	msg := models.MailData{
+		To:      reservation.Email,
+		From:    "me@here.com",
+		Subject: "Reservation Confirmation",
+		Content: htmlMessage,
+	}
+	m.App.MailChan <- msg
+
+	// Send an email to owner
+	htmlMessage = fmt.Sprintf(`
+		<strong>Reservation Notification</strong><br>
+		A reservation has been made for %s from %s to %s.
+	`,
+		reservation.Room.RoomName,
+		reservation.StartDate.Format("2006-01-02"),
+		reservation.EndDate.Format("2006-01-02"),
+	)
+	msg = models.MailData{
+		To:      "me@here.com",
+		From:    "me@here.com",
+		Subject: "Reservation Notification",
+		Content: htmlMessage,
+	}
+	m.App.MailChan <- msg
+
+	log.Println("PostReservation::reservation: ", reservation)
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
@@ -337,8 +377,18 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	// Remove reservation from session
 	m.App.Session.Remove(r.Context(), "reservation")
 
+	room, err := m.DB.GetRoomByID(reservation.RoomID)
+	log.Println("room: ", room)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	reservation.Room.RoomName = room.RoomName
+
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
+	log.Println("data: ", data)
 
 	sd := reservation.StartDate.Format("2006-01-02")
 	ed := reservation.EndDate.Format("2006-01-02")
@@ -391,6 +441,7 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	endDate, _ := time.Parse(layout, ed)
 
 	room, err := m.DB.GetRoomByID(roomID)
+	log.Println("room: ", room)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return

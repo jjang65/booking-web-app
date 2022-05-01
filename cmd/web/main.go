@@ -12,7 +12,6 @@ import (
 	"github.com/jjang65/booking-web-app/internal/render"
 	"log"
 	"net/http"
-	"net/smtp"
 	"os"
 	"time"
 )
@@ -32,13 +31,24 @@ func main() {
 	}
 	defer db.SQL.Close()
 
-	// Send a test email
-	from := "me@here.com"
-	auth := smtp.PlainAuth("", from, "", "localhost")
-	err = smtp.SendMail("localhost:1025", auth, from, []string{"you@there.com"}, []byte("Hello, world"))
-	if err != nil {
-		log.Println(err)
+	// defer to close MailChannel
+	// because defer close(app.MailChan) in run() func will close mail channel
+	// as soon as run() terminates, this needs to be here
+	// so when application closes, mail channel gets closed as well
+	defer close(app.MailChan)
+
+	// Listen for mail
+	fmt.Println("Starting mail listener!")
+	listenForMail()
+
+	// Send an email when server starts
+	msg := models.MailData{
+		To:      "j@do.ca",
+		From:    "me@here.com",
+		Subject: "Server running",
+		Content: "Server is running!",
 	}
+	app.MailChan <- msg
 
 	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 	//http.ListenAndServe(portNumber, nil)
@@ -58,6 +68,10 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+
+	// Mail channeling
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	// Change this to ture when in production
 	app.InProduction = false

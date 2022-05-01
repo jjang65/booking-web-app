@@ -60,6 +60,7 @@ func (m *postgresDbRepo) InsertRoomRestriction(r models.RoomRestriction) error {
 		time.Now(),
 		r.RestrictionID,
 	)
+	log.Println("r.RestrictionID: ", r.RestrictionID)
 	if err != nil {
 		log.Println("InsertRoomRestriction::err:", err)
 		return err
