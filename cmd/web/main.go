@@ -12,6 +12,7 @@ import (
 	"github.com/jjang65/booking-web-app/internal/render"
 	"log"
 	"net/http"
+	"net/smtp"
 	"os"
 	"time"
 )
@@ -30,6 +31,14 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.SQL.Close()
+
+	// Send a test email
+	from := "me@here.com"
+	auth := smtp.PlainAuth("", from, "", "localhost")
+	err = smtp.SendMail("localhost:1025", auth, from, []string{"you@there.com"}, []byte("Hello, world"))
+	if err != nil {
+		log.Println(err)
+	}
 
 	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 	//http.ListenAndServe(portNumber, nil)
