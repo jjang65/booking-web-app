@@ -41,6 +41,16 @@ func routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/user/login", handlers.Repo.ShowLogin)
 	mux.Post("/user/login", handlers.Repo.PostShowLogin)
+	mux.Get("/user/logout", handlers.Repo.Logout)
+
+	// Protect routes starting "admin"
+	mux.Route("/admin", func(mux chi.Router) {
+		// call Auth middleware
+		mux.Use(Auth)
+
+		// GET /admin/dashboard
+		mux.Get("/dashboard", handlers.Repo.AdminDashboard)
+	})
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
