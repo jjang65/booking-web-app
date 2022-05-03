@@ -10,10 +10,13 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
 // Init functions which type is FuncMap defining the mapping from names to functions.
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"humanDate": HumanDate,
+}
 
 // app is the pointer to AppConfig
 var app *config.AppConfig
@@ -22,6 +25,11 @@ var pathToTemplates = "./templates"
 // NewRenderer sets the config for the template package
 func NewRenderer(a *config.AppConfig) {
 	app = a
+}
+
+// HumanDate returns time in YYYY-MM-DD for the template format
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
 }
 
 // CreateTemplateCache creates a template cache as a map

@@ -46,7 +46,7 @@ func routes(app *config.AppConfig) http.Handler {
 	// Protect routes starting "admin"
 	mux.Route("/admin", func(mux chi.Router) {
 		// call Auth middleware
-		mux.Use(Auth)
+		//mux.Use(Auth)
 
 		// GET /admin/dashboard
 		mux.Get("/dashboard", handlers.Repo.AdminDashboard)
